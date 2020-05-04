@@ -1,19 +1,19 @@
-import React, { useEffect } from "react";
-import logo from "./logo.svg";
-import { Counter } from "./features/counter/Counter";
+import React, { useEffect, useState } from "react";
 import { Auth, Hub } from "aws-amplify";
-import { useDispatch } from "react-redux";
-import { getProfile, authLogOut } from "./features/auth/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { getProfile, logOut, selectIsAuthenticated } from "./features/auth/authSlice";
 import "./App.css";
 
 function App() {
   const dispatch = useDispatch();
+  const auth = useSelector(selectIsAuthenticated);
 
   useEffect(() => {
     // Load the current User
     Auth.currentAuthenticatedUser()
       .then((user) => {
-        dispatch(getProfile(JSON.stringify(user)));
+        setImmediate(() => dispatch(getProfile(JSON.stringify(user))));
+        // setAuth(true);
       })
       .catch((err) => console.log(err));
 
@@ -22,13 +22,11 @@ function App() {
       //   setImmediate(() => dispatch({ type: "LOADING" }));
       const { payload } = data;
       if (payload.event === "signIn") {
-        console.log("SignIn !!!!!");
         setImmediate(() => dispatch(getProfile(JSON.stringify(payload.data))));
-        // setImmediate(() => dispatch({ type: "LOGIN_USER", payload: payload.data }));
+        // setAuth(true);
       } else if (payload.event === "signOut") {
-        setImmediate(() => dispatch(authLogOut()));
-        // setImmediate(() => dispatch({ type: "SIGNOUT_USER" }));
-        console.log("SignOut !!!!!");
+        setImmediate(() => dispatch(logOut()));
+        // setAuth(false);
       }
     });
     return () => {
@@ -39,33 +37,9 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a className="App-link" href="https://reactjs.org/" target="_blank" rel="noopener noreferrer">
-            React
-          </a>
-          <span>, </span>
-          <a className="App-link" href="https://redux.js.org/" target="_blank" rel="noopener noreferrer">
-            Redux
-          </a>
-          <span>, </span>
-          <a className="App-link" href="https://redux-toolkit.js.org/" target="_blank" rel="noopener noreferrer">
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a className="App-link" href="https://react-redux.js.org/" target="_blank" rel="noopener noreferrer">
-            React Redux
-          </a>
-        </span>
-      </header>
+      <header className="App-header">{}</header>
       <div>
-        <button onClick={() => Auth.federatedSignIn({ provider: "Google" })}>Google Sign In</button>
+        {!auth && <button onClick={() => Auth.federatedSignIn({ provider: "Google" })}>Google Sign In</button>}
         <button
           onClick={() =>
             Auth.currentAuthenticatedUser()
@@ -75,7 +49,7 @@ function App() {
         >
           Check User
         </button>
-        <button onClick={() => Auth.signOut()}>SignOut</button>
+        <button onClick={() => dispatch(logOut())}>SignOut</button>
       </div>
     </div>
   );

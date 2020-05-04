@@ -9,7 +9,6 @@ export const authSlice = createSlice({
     isAuthenticated: false,
     profile: null,
     session: null,
-    user: null,
   },
   reducers: {
     getProfile: (state, action) => {
@@ -20,7 +19,6 @@ export const authSlice = createSlice({
       state.profile = action.payload;
       state.hasAuthenticated = true;
       state.isAuthenticated = true;
-      // state.user = action.payload.attributes.name;
     },
     getSession: (state, action) => {
       state.session = action.payload;
@@ -54,9 +52,9 @@ export const getCurrentUserAsync = (user) => (dispatch) => {
     });
 };
 
-export const authLogOut = () => (dispatch) => {
-  dispatch(logOut());
-};
+// export const authLogOut = () => (dispatch) => {
+//   dispatch(logOut());
+// };
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
