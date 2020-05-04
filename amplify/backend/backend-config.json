@@ -1,0 +1,9 @@
+{
+	"auth": {
+		"authreduxboilerplate3e3b830a": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": []
+		}
+	}
+}
